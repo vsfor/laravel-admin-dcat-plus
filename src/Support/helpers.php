@@ -593,3 +593,91 @@ if (! function_exists('format_byte')) {
         return round($value, $dec).$prefix_arr[$i];
     }
 }
+
+if (! function_exists('getMicroDate')) {
+	function getMicroDate($format='Y-m-d H:i:s.v', $microTimeFloat = null) {
+	    $retry = 0;
+	    do {
+	        if ($retry > 0) { //date_create_from_format 可能返回false
+	            usleep(5000);
+	        }
+	        $dt = date_create_from_format('U.u', $microTimeFloat ?? microtime(true));
+	        $retry++;
+	    } while($dt === false);
+	    return $dt->setTimezone(new \DateTimeZone('Asia/Shanghai'))->format($format);
+	}
+}
+
+if (! function_exists('showLog')) {
+	function showLog($obj, $dump = false) {
+		if ($dump) {
+			return dump($obj);
+		}
+	    if(PHP_SAPI === 'cli') {
+	        $br = PHP_EOL;
+	    } else {
+	        $br = '<br>';
+	    }
+	    if (is_bool($obj) || is_null($obj)) {
+	        var_dump($obj);
+	    } elseif (is_string($obj) && $br=='<br>') {
+	        echo htmlentities($obj);
+	    } else {
+	        if($br == '<br>') {
+	            echo '<pre>';
+	            print_r($obj);
+	            echo '</pre>';
+	        } else {
+	            print_r($obj);
+	        }
+	    }
+	    echo $br;
+		return;
+	}
+}
+
+if (! function_exists('jsonEncode')) {
+	function jsonEncode($data, $flags = 0) {
+	    return json_encode($data, JSON_UNESCAPED_UNICODE | $flags);
+	}
+}
+
+if (! function_exists('jsonDecode')) {
+	function jsonDecode($json, $asArray = true) {
+	    return json_decode((string) $json, $asArray);
+	}
+}
+
+if (! function_exists('genUuid')) {
+	function genUuid() {
+	    return md5(uniqid().':'.microtime(true).':'.mt_rand(100000,999999));
+	}
+}
+
+if (!function_exists('pathToReal')) {
+    function pathToReal($path) { //规避 realpath() 方法对路径权限的限制
+        $path = str_replace('\\','/', $path);
+        $path = str_replace('/./','/',$path);
+        $flag = true; $max=100; $pi = 0;
+        while ($flag && $pi < $max) {
+            $pi++;
+            $cnt = 0;
+            $pa = explode('/', $path);
+            foreach ($pa as $i => $n) {
+                if ($i>0 && $n == '..') {
+                    $cnt++;
+                    unset($pa[$i-1]);
+                    unset($pa[$i]);
+                    break;
+                }
+            }
+            $path = implode('/', $pa);
+            if ($cnt < 1) {
+                $flag = false;
+            }
+        }
+
+        return $path;
+    }
+}
+
