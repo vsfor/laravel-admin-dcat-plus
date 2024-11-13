@@ -1,6 +1,6 @@
 {
-    "name": "dcat/laravel-admin",
-    "description": "dcat admin",
+    "name": "vsfor/laravel-admin",
+    "description": "based on dcat admin",
     "type": "library",
     "keywords": [
         "dcat",
@@ -10,12 +10,12 @@
         "form",
         "laravel admin"
     ],
-    "homepage": "https://github.com/jqhph/dcat-admin",
+    "homepage": "https://github.com/vsfor/laravel-admin-dcat-plus",
     "license": "MIT",
     "authors": [
         {
-            "name": "jqh",
-            "email": "841324345@qq.com"
+            "name": "vsfor",
+            "email": "jeen@vsfor.com"
         }
     ],
     "require": {
