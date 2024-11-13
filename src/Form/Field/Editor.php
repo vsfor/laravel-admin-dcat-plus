@@ -15,27 +15,20 @@ class Editor extends Field
 {
     protected $options = [
         'plugins' => [
-            'advlist',
-            'autolink',
-            'link',
-            'image',
-            'media',
-            'lists',
-            'preview',
-            'code',
-            'help',
-            'fullscreen',
-            'table',
-            'autoresize',
-            'codesample',
+            'advlist', 'autolink',
+            'link', 'image', 'media', 'lists',
+            'preview', 'code', 'help', 'fullscreen',
+            'table', 'autoresize', 'codesample',
         ],
         'toolbar' => [
-            'undo redo | preview fullscreen | styleselect | fontsizeselect bold italic underline strikethrough forecolor backcolor | link image media blockquote removeformat codesample',
-            'alignleft aligncenter alignright  alignjustify| indent outdent bullist numlist table subscript superscript | code',
-        ],
-        'min_height' => 400,
+            // 'undo redo | preview fullscreen | styleselect | fontsizeselect bold italic underline strikethrough forecolor backcolor | link image media blockquote removeformat codesample',
+            // 'alignleft aligncenter alignright  alignjustify| indent outdent bullist numlist table subscript superscript | code',
+            'undo redo preview fullscreen | bold italic underline strikethrough forecolor backcolor link image '
+		],
+        'min_height' => 500,
         'save_enablewhendirty' => true,
         'convert_urls' => false,
+        'license_key' => 'gpl',
     ];
 
     protected $disk;
