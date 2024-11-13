@@ -681,3 +681,8 @@ if (!function_exists('pathToReal')) {
     }
 }
 
+if (! function_exists('getImgServer')) {
+    function getImgServer() {
+        return env('IMAGE_BASE_URL','');
+    }
+}

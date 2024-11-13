@@ -2,6 +2,8 @@
 
 namespace Dcat\Admin\Scaffold;
 
+use Illuminate\Support\Str;
+
 trait ShowCreator
 {
     /**
@@ -23,6 +25,12 @@ trait ShowCreator
 
         foreach ($fields as $k => $field) {
             if (empty($field['name'])) {
+                continue;
+            }
+            if (Str::endsWith($field['name'],'image')
+                || Str::endsWith($field['name'],'images')
+            ) {
+                $rows[] = "            \$show->field('{$field['name']}')->image(getImgServer(),120,120);";
                 continue;
             }
 

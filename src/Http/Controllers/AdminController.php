@@ -107,7 +107,7 @@ class AdminController extends Controller
             ->translation($this->translation())
             ->title($this->title())
             ->description($this->description()['edit'] ?? trans('admin.edit'))
-            ->body($this->form()->edit($id));
+            ->body($this->formEdit()->edit($id));
     }
 
     /**
@@ -122,7 +122,7 @@ class AdminController extends Controller
             ->translation($this->translation())
             ->title($this->title())
             ->description($this->description()['create'] ?? trans('admin.create'))
-            ->body($this->form());
+            ->body($this->formCreate());
     }
 
     /**
@@ -133,7 +133,7 @@ class AdminController extends Controller
      */
     public function update($id)
     {
-        return $this->form()->update($id);
+        return $this->formEdit()->update($id);
     }
 
     /**
@@ -143,7 +143,7 @@ class AdminController extends Controller
      */
     public function store()
     {
-        return $this->form()->store();
+        return $this->formCreate()->store();
     }
 
     /**

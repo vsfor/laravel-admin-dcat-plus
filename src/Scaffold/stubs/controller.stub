@@ -10,41 +10,47 @@ use Dcat\Admin\Http\Controllers\AdminController;
 
 class DummyClass extends AdminController
 {
-    /**
-     * Make a grid builder.
-     *
-     * @return Grid
-     */
     protected function grid()
     {
         return Grid::make(new DummyModel(), function (Grid $grid) {
+            $grid->disableRowSelector();
+            $grid->disableDeleteButton();
+            $grid->disableBatchDelete();
+
             {grid}
         });
     }
 
-    /**
-     * Make a show builder.
-     *
-     * @param mixed $id
-     *
-     * @return Show
-     */
     protected function detail($id)
     {
         return Show::make($id, new DummyModel(), function (Show $show) {
+            $show->disableDeleteButton();
+
             {show}
         });
     }
 
-    /**
-     * Make a form builder.
-     *
-     * @return Form
-     */
-    protected function form()
+    protected function formEdit()
+    {
+        return Form::make(new DummyModel(), function (Form $form) {
+            $form->disableDeleteButton();
+            /** @var DummyModel $model */
+            $model = $form->model();
+
+            {form}
+        });
+    }
+
+    protected function formCreate()
     {
         return Form::make(new DummyModel(), function (Form $form) {
             {form}
         });
     }
+
+    protected function form()
+    {
+        return Form::make(new DummyModel());
+    }
+
 }
