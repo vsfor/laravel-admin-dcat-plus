@@ -3,15 +3,22 @@
 namespace DummyNamespace;
 
 DummyImportDateTimeFormatterTrait
+DummyImportValueDesTrait
 DummyImportSoftDeletesTrait
 use Illuminate\Database\Eloquent\Model;
 
+DummyComment
 class DummyClass extends Model
 {
 	DummyUseDateTimeFormatterTrait
+    DummyUseValueDesTrait
     DummyUseSoftDeletesTrait
+    DummyDeleteColumnName
 
     DummyModelTable
     DummyModelKey
+    protected $keyType = 'int';
+    public $incrementing = true;
+    protected $guarded = [];
     DummyTimestamp
 }

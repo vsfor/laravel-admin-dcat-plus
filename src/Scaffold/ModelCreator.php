@@ -4,6 +4,7 @@ namespace Dcat\Admin\Scaffold;
 
 use Dcat\Admin\Exception\AdminException;
 use Dcat\Admin\Support\Helper;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ModelCreator
@@ -72,6 +73,8 @@ class ModelCreator
 
         $stub = $this->replaceClass($stub, $this->name)
             ->replaceNamespace($stub, $this->name)
+            ->replaceComment($stub)
+            ->replaceValueDes($stub)
             ->replaceSoftDeletes($stub, $softDeletes)
             ->replaceDatetimeFormatter($stub)
             ->replaceTable($stub, $this->name)
@@ -142,6 +145,87 @@ class ModelCreator
     }
 
     /**
+     * Replace comment dummy.
+     *
+     * @param  string  $stub
+     * @param  string  $name
+     * @return $this
+     */
+    protected function replaceComment(&$stub)
+    {
+        $stub = str_replace(
+            'DummyComment',
+            $this->getTableComment($this->tableName),
+            $stub
+        );
+
+        return $this;
+    }
+
+    protected function getTableComment($tableName)
+    {
+        $info = jsonDecode(jsonEncode(DB::select("SHOW FULL COLUMNS FROM `{$tableName}`;")));
+        //showLog($info);exit();
+        $_key = $info[0]; //仅判断第一个字段；非常规数据表，生成后需自行编辑调整。
+        if ($_key['Key'] == 'PRI') {
+            $this->pkName = $_key['Field'];
+            if (strstr($_key['Type'],'int')) {
+                $this->pkType = 'int';
+            } else {
+                $this->pkType = 'string';
+            }
+            if ($_key['Extra'] == 'auto_increment') {
+                $this->pkIncrement = 'true';
+            } else {
+                $this->pkIncrement = 'false';
+            }
+        }
+        $comments = ['/**'];
+        $comments[] = '* table `'.$tableName.'`';
+        $comments[] = '*';
+        foreach ($info as $attr) {
+            $t = '* @property';
+            if (strpos($attr['Type'],'int') !== false) {
+                $t .= ' int';
+            } else {
+                $t .= ' string';
+            }
+            if ($attr['Null'] != 'NO') {
+                $t .= '|null';
+            }
+            $t .= ' $'.$attr['Field'];
+            if (!empty($attr['Comment'])) {
+                $t .= ' '. $attr['Comment'];
+            } else {
+                $t .= ' //'.$attr['Type'];
+            }
+            $comments[] = $t;
+            if ($attr['Field'] == 'delete_time') {
+                $this->hasDeleteTimeColumn = true;
+            }
+        }
+        $comments[] = '*/';
+        return implode("\n ", $comments);
+    }
+
+    /**
+     * Replace soft-deletes dummy.
+     *
+     * @param  string  $stub
+     * @return $this
+     */
+    protected function replaceValueDes(&$stub)
+    {
+        $import = 'use App\\Helpers\\ValueDesTrait;';
+        $use = 'use ValueDesTrait;';
+
+        $stub = str_replace(['DummyImportValueDesTrait', 'DummyUseValueDesTrait'], [$import, $use], $stub);
+
+        return $this;
+    }
+
+    protected $hasDeleteTimeColumn = false;
+    /**
      * Replace soft-deletes dummy.
      *
      * @param  string  $stub
@@ -150,14 +234,18 @@ class ModelCreator
      */
     protected function replaceSoftDeletes(&$stub, $softDeletes)
     {
-        $import = $use = '';
+        $import = $use = $delColumn = '';
 
         if ($softDeletes) {
             $import = 'use Illuminate\\Database\\Eloquent\\SoftDeletes;';
             $use = 'use SoftDeletes;';
         }
 
-        $stub = str_replace(['DummyImportSoftDeletesTrait', 'DummyUseSoftDeletesTrait'], [$import, $use], $stub);
+        if ($this->hasDeleteTimeColumn) {
+            $delColumn = 'const DELETED_AT = \'delete_time\';';
+        }
+
+        $stub = str_replace(['DummyImportSoftDeletesTrait', 'DummyUseSoftDeletesTrait', 'DummyDeleteColumnName'], [$import, $use, $delColumn], $stub);
 
         return $this;
     }
@@ -192,7 +280,7 @@ class ModelCreator
      */
     protected function replacePrimaryKey(&$stub, $keyName)
     {
-        $modelKey = $keyName == 'id' ? '' : "protected \$primaryKey = '$keyName';\n";
+        $modelKey = $keyName == 'id' ? '' : "protected \$primaryKey = '$keyName';";
 
         $stub = str_replace('DummyModelKey', $modelKey, $stub);
 
@@ -210,7 +298,7 @@ class ModelCreator
     {
         $class = str_replace($this->getNamespace($name).'\\', '', $name);
 
-        $table = Str::plural(strtolower($class)) !== $this->tableName ? "protected \$table = '$this->tableName';\n" : '';
+        $table = Str::plural(strtolower($class)) !== $this->tableName ? "protected \$table = '$this->tableName';" : '';
 
         $stub = str_replace('DummyModelTable', $table, $stub);
 
