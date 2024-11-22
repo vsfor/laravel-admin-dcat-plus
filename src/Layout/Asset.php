@@ -180,6 +180,16 @@ class Asset
         '@autocomplete' => [
             'js' => '@admin/dcat/plugins/autocomplete/jquery.autocomplete.min.js',
         ],
+        '@grid-column-gallery-asset' => [
+            'js' => [
+                '@admin/plus/grid-column-gallery/js/index.js',
+                '@admin/plus/grid-column-gallery/js/viewer.js',
+            ],
+            'css' => [
+                '@admin/plus/grid-column-gallery/css/index.css',
+                '@admin/plus/grid-column-gallery/css/viewer.css',
+            ],
+        ],
     ];
 
     /**
